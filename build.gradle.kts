@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "net.eve0415.mc"
-version = "1.0-SNAPSHOT"
+version = "1.0.0-SNAPSHOT"
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 val compileKotlin: KotlinCompile by tasks
@@ -55,7 +55,7 @@ tasks.named<Jar>("jar") {
 }
 
 tasks.named<ShadowJar>("shadowJar") {
-    archiveBaseName.set("GregPatcher")
+    archiveFileName.set("GregPatcher-1.12.2-${project.version}.jar")
     exclude("**/module-info.class")
     minimize()
 
