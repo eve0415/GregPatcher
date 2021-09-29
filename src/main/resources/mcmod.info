@@ -1,0 +1,20 @@
+[
+  {
+    "modid": "gregpatcher",
+    "name": "GregPatcher",
+    "description": "Patch GregTech Community Edition and Gregicality for my own purposes.",
+    "version": "${version}",
+    "mcversion": "1.12.2",
+    "url": "https://github.com/eve0415/GregPatcher",
+    "updateUrl": "",
+    "authorList": [
+      "eve0415"
+    ],
+    "credits": "The creators of GTCE, GT5U, Gregicaly and GregoriusT.",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": [
+      "gtadditions"
+    ]
+  }
+]
