@@ -1,20 +1,39 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import net.minecraftforge.gradle.common.tasks.SignJar
 import net.minecraftforge.gradle.userdev.UserDevExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.util.*
 
 plugins {
     java
     kotlin("jvm")
     id("net.minecraftforge.gradle")
+    id("net.kyori.blossom")
     id("com.github.johnrengelman.shadow")
 }
 
 group = "net.eve0415.mc"
 version = "1.0.0-SNAPSHOT"
 
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions.jvmTarget = "1.8"
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+
+val signProps = if (!System.getenv("KEY_STORE").isNullOrEmpty()) {
+    System.getenv("KEY_STORE").reader().let {
+        val prop = Properties()
+        prop.load(it)
+        return@let prop
+    }
+} else if (file("secret.properties").exists()) {
+    file("secret.properties").inputStream().let {
+        val prop = Properties()
+        prop.load(it)
+        return@let prop
+    }
+} else {
+    Properties()
+}
 
 configure<UserDevExtension> {
     mappings("snapshot", "20180814-1.12")
@@ -32,36 +51,69 @@ dependencies {
     implementation("curse.maven:the-one-probe-245211:2667280")
 }
 
-tasks.named<ProcessResources>("processResources") {
-    inputs.property("version", project.version)
-    from(sourceSets.main.get().resources.srcDirs) {
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
-        include("mcmod.info")
-        expand("version" to project.version)
-    }
+blossom {
+    replaceToken("@VERSION@", project.version)
+    replaceToken("@FINGERPRINT@", signProps["signSHA1"])
 }
 
-tasks.named<Jar>("jar") {
-    manifest {
-        attributes(
-            mapOf(
-                "FMLCorePluginContainsFMLMod" to "true",
-                "FMLCorePlugin" to "net.eve0415.mc.gregpatcher.GregPatcher"
+tasks {
+    compileJava {
+        sourceCompatibility = "1.8"
+        targetCompatibility = "1.8"
+    }
+
+    compileKotlin {
+        sourceCompatibility = "1.8"
+        targetCompatibility = "1.8"
+    }
+
+    named<ProcessResources>("processResources") {
+        inputs.property("version", project.version)
+        from(sourceSets.main.get().resources.srcDirs) {
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+            include("mcmod.info")
+            expand("version" to project.version)
+        }
+    }
+
+    named<Jar>("jar") {
+        manifest {
+            attributes(
+                mapOf(
+                    "FMLCorePluginContainsFMLMod" to "true",
+                    "FMLCorePlugin" to "net.eve0415.mc.gregpatcher.GregPatcher"
+                )
             )
-        )
+        }
+
+        finalizedBy("reobfJar")
     }
 
-    finalizedBy("reobfJar")
-}
+    named<ShadowJar>("shadowJar") {
+        archiveFileName.set("GregPatcher-1.12.2-${project.version}.jar")
+        exclude("**/module-info.class")
+        minimize()
 
-tasks.named<ShadowJar>("shadowJar") {
-    archiveFileName.set("GregPatcher-1.12.2-${project.version}.jar")
-    exclude("**/module-info.class")
-    minimize()
+        dependencies {
+            include(dependency("org.jetbrains.kotlin:kotlin-stdlib"))
+        }
+    }
 
-    dependencies {
-        include(dependency("org.jetbrains.kotlin:kotlin-stdlib"))
+    create<SignJar>("signJar") {
+        dependsOn("shadowJar")
+        onlyIf {
+            signProps.isNotEmpty()
+        }
+
+        keyStore.set(signProps["keyStore"] as String)
+        storePass.set(signProps["keyStorePass"] as String)
+        alias.set(signProps["keyStoreAlias"] as String)
+        keyPass.set(signProps["keyStoreKeyPass"] as String)
+        inputFile.set(named<Jar>("shadowJar").get().archiveFile)
+        outputFile.set(named<Jar>("shadowJar").get().archiveFile)
+    }
+
+    named("build") {
+        dependsOn("signJar")
     }
 }
-
-tasks.named("build") { dependsOn("shadowJar") }
