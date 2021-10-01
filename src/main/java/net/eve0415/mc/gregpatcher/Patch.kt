@@ -35,7 +35,8 @@ abstract class Patch(private val inputClassBytes: ByteArray?) : Opcodes {
     }
 
     protected abstract fun patch(): Boolean
-    protected fun getName(clazz: Class<*>?): String {
+
+    private fun getName(clazz: Class<*>?): String {
         return Type.getInternalName(clazz)
     }
 
