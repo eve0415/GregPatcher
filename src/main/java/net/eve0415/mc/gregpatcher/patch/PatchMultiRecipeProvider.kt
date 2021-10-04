@@ -11,7 +11,7 @@ import org.objectweb.asm.tree.VarInsnNode
 
 // Original: gregicadditions/theoneprobe/MultiRecipeProvider.java
 
-class PatchMultiRecipeProvider(inputClass: ByteArray?) : Patch(inputClass) {
+class PatchMultiRecipeProvider(inputClass: ByteArray) : Patch(inputClass) {
     override fun patch(): Boolean {
         val addProbeInfo = findMethod("addProbeInfo", ACC_PROTECTED)!!.instructions
 

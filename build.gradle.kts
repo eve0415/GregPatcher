@@ -56,6 +56,8 @@ blossom {
     replaceToken("@FINGERPRINT@", signProps["signSHA1"])
 }
 
+reobf.create("shadowJar")
+
 tasks {
     compileJava {
         sourceCompatibility = "1.8"
@@ -85,14 +87,13 @@ tasks {
                 )
             )
         }
-
-        finalizedBy("reobfJar")
     }
 
     named<ShadowJar>("shadowJar") {
         archiveFileName.set("GregPatcher-1.12.2-${project.version}.jar")
         exclude("**/module-info.class")
         minimize()
+        finalizedBy("reobfShadowJar")
 
         dependencies {
             include(dependency("org.jetbrains.kotlin:kotlin-stdlib"))
@@ -100,7 +101,7 @@ tasks {
     }
 
     create<SignJar>("signJar") {
-        dependsOn("shadowJar")
+        dependsOn("reobfShadowJar")
         onlyIf {
             signProps.isNotEmpty()
         }

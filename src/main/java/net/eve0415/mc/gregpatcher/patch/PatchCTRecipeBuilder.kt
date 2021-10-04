@@ -9,7 +9,7 @@ import org.objectweb.asm.tree.*
 
 // Original: gregtech/api/recipes/crafttweaker/CTRecipeBuilder.java
 
-class PatchCTRecipeBuilder(inputClass: ByteArray?) : Patch(inputClass) {
+class PatchCTRecipeBuilder(inputClass: ByteArray) : Patch(inputClass) {
     override fun patch(): Boolean {
         var insertionPoint: AbstractInsnNode? = null
         val circuit = findMethod("circuit")!!.instructions

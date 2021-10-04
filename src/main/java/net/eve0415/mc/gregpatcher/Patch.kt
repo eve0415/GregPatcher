@@ -6,10 +6,11 @@ import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.ClassNode
+import org.objectweb.asm.tree.FieldNode
 import org.objectweb.asm.tree.MethodNode
 
 abstract class Patch(private val inputClassBytes: ByteArray?) : Opcodes {
-    private val classNode: ClassNode
+    protected val classNode: ClassNode
     protected val hookClass = getName(javaClass).replace("patch/(.+)Patch".toRegex(), "hook/$1Hook")
 
     init {
@@ -57,6 +58,15 @@ abstract class Patch(private val inputClassBytes: ByteArray?) : Opcodes {
         for (methodNode in classNode.methods) {
             if (methodNode.name == methodName && methodNode.access == api) {
                 return methodNode
+            }
+        }
+        return null
+    }
+
+    protected fun findField(fieldName: String): FieldNode? {
+        for (fieldNode in classNode.fields) {
+            if (fieldNode.name == fieldName) {
+                return fieldNode
             }
         }
         return null
