@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "net.eve0415.mc"
-version = "1.0.0-SNAPSHOT"
+version = "1.0.0"
 
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions.jvmTarget = "1.8"
