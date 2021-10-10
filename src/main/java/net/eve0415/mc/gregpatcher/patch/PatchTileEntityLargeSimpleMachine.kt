@@ -2,6 +2,7 @@ package net.eve0415.mc.gregpatcher.patch
 
 import gregicadditions.machines.multi.simple.TileEntityLargeBenderAndForming
 import gregicadditions.machines.multi.simple.TileEntityLargeMultiUse
+import gregtech.api.items.metaitem.MetaItem
 import gregtech.api.recipes.Recipe
 import gregtech.api.recipes.RecipeMap
 import net.eve0415.mc.gregpatcher.Patch
@@ -166,11 +167,11 @@ class PatchTileEntityLargeSimpleMachine(inputClass: ByteArray) : Patch(inputClas
             val isEmpty = if (BenderForm != null) BenderForm?.inputInventory?.let {
                 IntStream.range(0, it.slots)
                     .mapToObj { i: Int -> BenderForm!!.inputInventory.getStackInSlot(i) }
-                    .allMatch { obj: ItemStack -> obj.isEmpty }
+                    .allMatch { obj: ItemStack -> obj.isEmpty || obj.item.equals(MetaItem.getMetaItems().first()) }
             } else Multi?.inputInventory?.let {
                 IntStream.range(0, it.slots)
                     .mapToObj { i: Int -> Multi!!.inputInventory.getStackInSlot(i) }
-                    .allMatch { obj: ItemStack -> obj.isEmpty }
+                    .allMatch { obj: ItemStack -> obj.isEmpty || obj.item.equals(MetaItem.getMetaItems().first()) }
             }
             if (isEmpty == false) return pos
 
