@@ -1,15 +1,14 @@
-name: Build Jar
+name: Release
 
 on:
   push:
-    branches: [ "*" ]
-    tags-ignore: [ "*" ]
+    tags: [ "*" ]
 
 jobs:
-  Build:
+  Release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v2
 
       - name: Set up JDK 8
@@ -34,9 +33,10 @@ jobs:
           export KEY_STORE="${{ secrets.KEY_STORE }}"
           ./gradlew build
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Release package
+        uses: softprops/action-gh-release@v1
         if: success()
         with:
-          name: GregPatcher
-          path: build/libs/*1.12.2*
+          files: build/libs/*1.12.2*.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
