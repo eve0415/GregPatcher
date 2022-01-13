@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "net.eve0415.mc"
-version = "1.0.0"
+version = "1.1.0-SNAPSHOT"
 
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions.jvmTarget = "1.8"
@@ -44,7 +44,7 @@ repositories {
 }
 
 dependencies {
-    "minecraft"("net.minecraftforge:forge:1.12.2-14.23.5.2855")
+    "minecraft"("net.minecraftforge:forge:1.12.2-14.23.5.2860")
     api("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.21")
     implementation("curse.maven:gregtechce-293327:3388082")
     implementation("curse.maven:gregicality-364851:3388278")
